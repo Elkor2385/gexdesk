@@ -1,56 +1,100 @@
 let mainChart = null;
-let sparklines = {};
 let globalData = {};
+let currentSymbol = 'SPY';
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetch('data.json')
-        .then(res => res.json())
-        .then(result => {
-            document.getElementById('last-update').innerText = `Last Updated: ${new Date(result.last_updated).toLocaleTimeString()}`;
-            globalData = result.data;
-            
-            const container = document.getElementById('tickers-row');
-            container.innerHTML = '';
-            
-            let firstSymbol = null;
-            for (let symbol in globalData) {
-                if (!firstSymbol) firstSymbol = symbol;
-                const item = globalData[symbol];
-                const isPos = item.change_percent >= 0;
+    // التحميل الأول للبيانات
+    loadLiveData();
 
-                const card = document.createElement('div');
-                card.className = 'ticker-card';
-                card.id = `card-${symbol}`;
-                card.innerHTML = `
-                    <div class="card-left">
-                        <div class="symbol">${symbol}</div>
-                        <div class="price">$${item.price}</div>
-                        <div class="change ${isPos ? 'positive' : 'negative'}">${isPos ? '+' : ''}${item.change_percent}%</div>
-                    </div>
-                    <div class="sparkline-box">
-                        <canvas id="spark-${symbol}"></canvas>
-                    </div>
-                `;
-
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('.ticker-card').forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                    renderSymbolView(symbol);
-                });
-
-                container.appendChild(card);
-                renderSparkline(symbol, item.sparkline, isPos);
-            }
-
-            if (firstSymbol) {
-                document.getElementById(`card-${firstSymbol}`).classList.add('active');
-                renderSymbolView(firstSymbol);
-            }
-        });
+    // إعداد التحديث اللحظي التلقائي كل 5 ثوانٍ (Real-Time Polling)
+    setInterval(() => {
+        loadLiveData(true); // true تعني تحديث صامت بدون إعادة رسم الواجهة كاملة
+    }, 5000);
 });
 
+function loadLiveData(isSilent = false) {
+    fetch('data.json?t=' + new Date().getTime()) // تجنب الـ Cache
+        .then(res => res.json())
+        .then(result => {
+            document.getElementById('last-update').innerText = `LIVE AUTO-FEED: ${new Date(result.last_updated).toLocaleTimeString()}`;
+            globalData = result.data;
+            
+            if (!isSilent) {
+                renderTickersRow();
+                renderSymbolView(currentSymbol);
+            } else {
+                updateDynamicValues();
+            }
+        })
+        .catch(err => console.log("Live fetch waiting...", err));
+}
+
+function renderTickersRow() {
+    const container = document.getElementById('tickers-row');
+    container.innerHTML = '';
+    
+    for (let symbol in globalData) {
+        const item = globalData[symbol];
+        const isPos = item.change_percent >= 0;
+
+        const card = document.createElement('div');
+        card.className = `ticker-card ${symbol === currentSymbol ? 'active' : ''}`;
+        card.id = `card-${symbol}`;
+        card.innerHTML = `
+            <div class="card-left">
+                <div class="symbol">${symbol}</div>
+                <div class="price" id="price-${symbol}">$${item.price}</div>
+                <div class="change ${isPos ? 'positive' : 'negative'}">${isPos ? '+' : ''}${item.change_percent}%</div>
+            </div>
+            <div class="sparkline-box">
+                <canvas id="spark-${symbol}"></canvas>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.ticker-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            currentSymbol = symbol;
+            renderSymbolView(symbol);
+        });
+
+        container.appendChild(card);
+        renderSparkline(symbol, item.sparkline, isPos);
+    }
+}
+
+function updateDynamicValues() {
+    // تحديث قيم الأسعار في الكروت والشارت بشكل سلس
+    for (let symbol in globalData) {
+        const pEl = document.getElementById(`price-${symbol}`);
+        if (pEl) {
+            const oldP = parseFloat(pEl.innerText.replace('$', ''));
+            const newP = globalData[symbol].price;
+            pEl.innerText = `$${newP}`;
+            
+            if (newP > oldP) {
+                pEl.style.color = '#00e676';
+                setTimeout(() => pEl.style.color = '', 1000);
+            } else if (newP < oldP) {
+                pEl.style.color = '#ff1744';
+                setTimeout(() => pEl.style.color = '', 1000);
+            }
+        }
+    }
+    
+    // تحديث الشارت الحالي انسيابياً
+    if (mainChart && globalData[currentSymbol]) {
+        const item = globalData[currentSymbol];
+        mainChart.data.datasets[0].data = item.call_gex;
+        mainChart.data.datasets[1].data = item.put_gex;
+        mainChart.update('none'); // تحديث بدون إعادة أنيميشن مزعجة
+    }
+}
+
 function renderSparkline(symbol, data, isPos) {
-    const ctx = document.getElementById(`spark-${symbol}`).getContext('2d');
+    const el = document.getElementById(`spark-${symbol}`);
+    if (!el) return;
+    const ctx = el.getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -74,9 +118,18 @@ function renderSparkline(symbol, data, isPos) {
 
 function renderSymbolView(symbol) {
     const item = globalData[symbol];
-    document.getElementById('chart-title').innerText = `${symbol} - ADVANCED GREEK EXPOSURE PROFILE`;
+    if (!item) return;
 
-    const ctx = document.getElementById('strikeChart').getContext('2d');
+    document.getElementById('chart-title').innerText = `${symbol} - REAL-TIME GEX & OPTIONS FLOW`;
+
+    const levelsBox = document.getElementById('key-levels');
+    levelsBox.innerHTML = `
+        <div class="level-tag">Gamma Flip: <span>$${item.gamma_flip}</span></div>
+        <div class="level-tag">Call Wall: <span>$${item.call_wall}</span></div>
+        <div class="level-tag">Put Wall: <span>$${item.put_wall}</span></div>
+    `;
+
+    const ctx = document.getElementById('gexChart').getContext('2d');
     if (mainChart) mainChart.destroy();
 
     mainChart = new Chart(ctx, {
@@ -84,19 +137,38 @@ function renderSymbolView(symbol) {
         data: {
             labels: item.strikes,
             datasets: [
-                { label: 'Gamma Exposure (GEX)', data: item.gex, backgroundColor: '#00e676' },
-                { label: 'Delta Exposure (DEX)', data: item.dex, backgroundColor: '#00f0ff' },
-                { label: 'Vanna Exposure', data: item.vanna, backgroundColor: '#ab47bc' }
+                {
+                    label: 'Call GEX ($M)',
+                    data: item.call_gex,
+                    backgroundColor: '#00e676',
+                    stack: 'Stack 0'
+                },
+                {
+                    label: 'Put GEX ($M)',
+                    data: item.put_gex,
+                    backgroundColor: '#ff1744',
+                    stack: 'Stack 0'
+                }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: { duration: 500 },
             scales: {
-                x: { stacked: true, grid: { color: '#162032' }, ticks: { color: '#94a3b8' } },
-                y: { stacked: true, grid: { color: '#162032' }, ticks: { color: '#94a3b8' } }
+                x: {
+                    grid: { color: '#1d293d' },
+                    ticks: { color: '#94a3b8', font: { size: 10 } }
+                },
+                y: {
+                    grid: { color: '#1d293d' },
+                    ticks: { color: '#94a3b8' },
+                    title: { display: true, text: '$ Millions GEX', color: '#64748b' }
+                }
             },
-            plugins: { legend: { labels: { color: '#e2e8f0' } } }
+            plugins: {
+                legend: { labels: { color: '#e2e8f0' } }
+            }
         }
     });
 
