@@ -1,51 +1,37 @@
 let mainChart = null;
 let globalData = {};
 let currentSymbol = 'SPY';
+let currentMetric = 'gex'; // GEX افتراضياً
 
 document.addEventListener("DOMContentLoaded", () => {
     loadLiveData();
-    
-    // تحديث صامت كل 5 ثواني باش تبان البيانات كتحرك لايف
-    setInterval(() => {
-        loadLiveData(true);
-    }, 5000);
+    setInterval(() => loadLiveData(true), 5000);
 });
 
 function loadLiveData(isSilent = false) {
     fetch('data.json?t=' + new Date().getTime())
-        .then(res => {
-            if (!res.ok) throw new Error("Network issue");
-            return res.json();
-        })
+        .then(res => res.json())
         .then(result => {
             const timeEl = document.getElementById('last-update');
             if(timeEl) timeEl.innerText = `LIVE AUTO-FEED: ${new Date(result.last_updated).toLocaleTimeString()}`;
-            
             globalData = result.data;
-            
-            if (!globalData[currentSymbol]) {
-                currentSymbol = Object.keys(globalData)[0];
-            }
-
+            if (!globalData[currentSymbol]) currentSymbol = Object.keys(globalData)[0];
             if (!isSilent) {
                 renderTickersRow();
-                if (currentSymbol) renderSymbolView(currentSymbol);
+                renderSymbolView(currentSymbol);
             } else {
                 updateDynamicValues();
             }
-        })
-        .catch(err => console.log("Waiting for fresh data..."));
+        }).catch(err => console.log("Waiting..."));
 }
 
 function renderTickersRow() {
     const container = document.getElementById('tickers-row');
     if (!container) return;
     container.innerHTML = '';
-    
     for (let symbol in globalData) {
         const item = globalData[symbol];
         const isPos = item.change_percent >= 0;
-
         const card = document.createElement('div');
         card.className = `ticker-card ${symbol === currentSymbol ? 'active' : ''}`;
         card.innerHTML = `
@@ -57,14 +43,12 @@ function renderTickersRow() {
                 ${isPos ? '+' : ''}${item.change_percent || 0}%
             </div>
         `;
-
         card.addEventListener('click', () => {
             document.querySelectorAll('.ticker-card').forEach(c => c.classList.remove('active'));
             card.classList.add('active');
             currentSymbol = symbol;
             renderSymbolView(symbol);
         });
-
         container.appendChild(card);
     }
 }
@@ -72,27 +56,38 @@ function renderTickersRow() {
 function updateDynamicValues() {
     for (let symbol in globalData) {
         const pEl = document.getElementById(`price-${symbol}`);
-        if (pEl) {
-            const oldP = parseFloat(pEl.innerText.replace('$', ''));
-            const newP = globalData[symbol].price;
-            pEl.innerText = `$${newP}`;
-            
-            if (newP > oldP) {
-                pEl.style.color = '#00e676';
-                setTimeout(() => pEl.style.color = '', 1000);
-            } else if (newP < oldP) {
-                pEl.style.color = '#ff1744';
-                setTimeout(() => pEl.style.color = '', 1000);
-            }
-        }
+        if (pEl) pEl.innerText = `$${globalData[symbol].price}`;
     }
-    
     if (mainChart && currentSymbol && globalData[currentSymbol]) {
-        const item = globalData[currentSymbol];
-        mainChart.data.datasets[0].data = item.call_gex || [];
-        mainChart.data.datasets[1].data = item.put_gex || [];
-        mainChart.update('none');
+        updateChartData();
     }
+}
+
+function setMetric(metric) {
+    currentMetric = metric;
+    renderSymbolView(currentSymbol);
+}
+
+function updateChartData() {
+    const item = globalData[currentSymbol];
+    if (!item || !mainChart) return;
+    if (currentMetric === 'gex') {
+        mainChart.data.datasets[0].data = item.call_gex;
+        mainChart.data.datasets[1].data = item.put_gex;
+        mainChart.data.datasets[0].label = 'Call GEX ($M)';
+        mainChart.data.datasets[1].label = 'Put GEX ($M)';
+    } else if (currentMetric === 'dex') {
+        mainChart.data.datasets[0].data = item.dex;
+        mainChart.data.datasets[1].data = item.dex.map(v => -v);
+        mainChart.data.datasets[0].label = 'DEX Exposure';
+        mainChart.data.datasets[1].label = 'Inverted DEX';
+    } else if (currentMetric === 'vanna') {
+        mainChart.data.datasets[0].data = item.vanna;
+        mainChart.data.datasets[1].data = item.vanna.map(v => -v);
+        mainChart.data.datasets[0].label = 'Vanna Impact';
+        mainChart.data.datasets[1].label = 'Inverted Vanna';
+    }
+    mainChart.update('none');
 }
 
 function renderSymbolView(symbol) {
@@ -101,14 +96,14 @@ function renderSymbolView(symbol) {
         if (!item) return;
 
         const titleEl = document.getElementById('chart-title');
-        if (titleEl) titleEl.innerText = `${symbol} - REAL-TIME GEX & OPTIONS FLOW`;
+        if (titleEl) titleEl.innerText = `${symbol} - GREEKS & OPTIONS FLOW`;
 
         const levelsBox = document.getElementById('key-levels');
         if (levelsBox) {
             levelsBox.innerHTML = `
-                <div class="level-tag">Gamma Flip: <span>$${item.gamma_flip || 0}</span></div>
-                <div class="level-tag">Call Wall: <span>$${item.call_wall || 0}</span></div>
-                <div class="level-tag">Put Wall: <span>$${item.put_wall || 0}</span></div>
+                <div class="level-tag">Gamma Flip: <span>$${item.gamma_flip}</span></div>
+                <div class="level-tag">Call Wall: <span>$${item.call_wall}</span></div>
+                <div class="level-tag">Put Wall: <span>$${item.put_wall}</span></div>
             `;
         }
 
@@ -136,27 +131,26 @@ function renderSymbolView(symbol) {
                     plugins: { legend: { labels: { color: '#e2e8f0' } } }
                 }
             });
+            updateChartData();
         }
 
         const tbody = document.getElementById('exp-tbody');
         if (tbody) {
             tbody.innerHTML = '';
-            const tableData = item.expirations_table || [];
-            
-            tableData.forEach(row => {
+            (item.expirations_table || []).forEach(row => {
                 const tr = document.createElement('tr');
                 const isPos = (row.net_gex >= 0);
                 tr.innerHTML = `
-                    <td>📅 ${row.date || '-'}</td>
-                    <td>${row.vol || 0}</td>
-                    <td>${row.oi || 0}</td>
-                    <td class="${isPos ? 'positive' : 'negative'}">${isPos ? '+' : ''}${row.net_gex || 0}M</td>
-                    <td>${row.cp_ratio || 0}</td>
+                    <td>📅 ${row.date}</td>
+                    <td>${row.vol}</td>
+                    <td>${row.oi}</td>
+                    <td class="${isPos ? 'positive' : 'negative'}">${isPos ? '+' : ''}${row.net_gex}M</td>
+                    <td>${row.cp_ratio}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
     } catch (e) {
-        console.log("Error rendering view", e);
+        console.log("Error", e);
     }
 }
