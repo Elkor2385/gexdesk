@@ -3,37 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEXDESK - Live Options & Greeks Dashboard</title>
+    <title>GEXDESK - Pro Options & Greeks Terminal</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- استدعاء مكتبة Chart.js للرسوم البيانية التفاعلية -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header class="top-bar">
-        <h1>GEXDESK <span class="badge">Pro Interactive Greeks</span></h1>
-        <div id="last-update">Last Updated: Loading...</div>
+        <div class="logo-area">
+            <h1>GEXDESK</h1>
+            <span class="badge">PRO INTERACTIVE GREEKS</span>
+        </div>
+        <div class="right-header">
+            <span id="last-update">Last Updated: Loading...</span>
+        </div>
     </header>
 
-    <main class="dashboard-container">
-        <!-- تيكرز السوق -->
-        <section class="tickers-grid" id="tickers-grid">
-            <!-- سيتم تعبئتها أوتوماتيكياً -->
-        </section>
+    <main class="dashboard">
+        <section class="tickers-row" id="tickers-row"></section>
 
-        <!-- قسم الرسوم البيانية التفاعلية -->
-        <section class="analytics-section">
+        <section class="analytics-grid">
             <div class="panel chart-panel">
-                <h3 id="chart-title">Select a Ticker to View GEX & DEX Profile</h3>
-                <div class="canvas-container">
-                    <canvas id="gexChart"></canvas>
+                <h3 id="chart-title">ADVANCED GREEK EXPOSURE PROFILE</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="strikeChart"></canvas>
                 </div>
             </div>
-            
-            <div class="panel">
-                <h3>0DTE & Calendar Expirations</h3>
-                <div id="expiration-list" class="exp-box">
-                    <span>Awaiting selection...</span>
+
+            <div class="panel table-panel">
+                <h3>0DTE & CALENDAR EXPIRATIONS - DENSE CHAIN DATA</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Volume</th>
+                                <th>Open Interest</th>
+                                <th>Net GEX ($M)</th>
+                                <th>C/P Ratio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exp-tbody"></tbody>
+                    </table>
                 </div>
+                <div class="footer-note">Powered by GEXDESK Engine</div>
             </div>
         </section>
     </main>
