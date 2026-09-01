@@ -1,67 +1,88 @@
 import json
 from datetime import datetime, timezone
 import yfinance as yf
-import numpy as np
 
-tickers = ["SPY", "QQQ", "USO", "GLD", "SLV", "NVDA", "TSLA", "AAPL", "IBIT", "ETHA"]
+tickers = ["SPY", "NVDA", "TSLA", "QQQ", "USO", "GLD", "SLV", "AAPL", "IBIT", "ETHA"]
 market_data = {}
 
 for symbol in tickers:
     try:
         tk = yf.Ticker(symbol)
-        hist = tk.history(period="1d")
-        current_price = float(hist["Close"].iloc[-1]) if not hist.empty else 0.0
-        open_price = float(hist["Open"].iloc[-1]) if not hist.empty else current_price
+        hist = tk.history(period="5d", interval="15m")
         
-        change_pct = ((current_price - open_price) / open_price * 100) if open_price != 0 else 0.0
+        if not hist.empty:
+            current_price = float(hist["Close"].iloc[-1])
+            prev_close = float(hist["Close"].iloc[0])
+            change_pct = round(((current_price - prev_close) / prev_close) * 100, 2)
+            sparkline = [round(p, 2) for p in hist["Close"].iloc[-20:].tolist()]
+        else:
+            current_price, change_pct, sparkline = 100.0, 0.0, []
+
         expiration_dates = list(tk.options) if hasattr(tk, 'options') else []
+        strike_data = {}
+        exp_table_data = []
 
-        total_gex = 0.0
-        total_dex = 0.0
-        total_volume = 0
-        total_oi = 0
-
-        # حساب تقريبي احترافي لـ GEX و DEX باستخدام أول تاريخ صلاحية متاح (0DTE/Near-term)
-        if expiration_dates:
-            opt_chain = tk.option_chain(expiration_dates[0])
-            calls = opt_chain.calls
-            puts = opt_chain.puts
-
-            # حساب تجميعي مبسط بناء على الـ Open Interest والـ Gamma/Delta
-            for _, row in calls.iterrows():
-                oi = row.get('openInterest', 0) or 0
-                vol = row.get('volume', 0) or 0
-                gamma = row.get('gamma', 0.0) or 0.0
-                delta = row.get('delta', 0.0) or 0.0
+        for exp in expiration_dates[:8]:
+            try:
+                chain = tk.option_chain(exp)
+                calls, puts = chain.calls, chain.puts
                 
-                total_gex += gamma * oi * 100 * current_price * current_price * 0.01
-                total_dex += delta * oi * 100 * current_price
-                total_volume += int(vol)
-                total_oi += int(oi)
+                exp_vol = int(calls['volume'].fillna(0).sum() + puts['volume'].fillna(0).sum())
+                exp_oi = int(calls['openInterest'].fillna(0).sum() + puts['openInterest'].fillna(0).sum())
+                call_vol = calls['volume'].fillna(0).sum()
+                put_vol = puts['volume'].fillna(0).sum()
+                cp_ratio = round(call_vol / put_vol, 2) if put_vol > 0 else 1.0
 
-            for _, row in puts.iterrows():
-                oi = row.get('openInterest', 0) or 0
-                vol = row.get('volume', 0) or 0
-                gamma = row.get('gamma', 0.0) or 0.0
-                delta = row.get('delta', 0.0) or 0.0
+                exp_gex = 0.0
                 
-                # وضع علامة سالبة لليونكس الخاصة بالبوتات في الـ GEX
-                total_gex -= gamma * oi * 100 * current_price * current_price * 0.01
-                total_dex += delta * oi * 100 * current_price
-                total_volume += int(vol)
-                total_oi += int(oi)
+                for df, multiplier in [(calls, 1), (puts, -1)]:
+                    for _, row in df.iterrows():
+                        strike = float(row['strike'])
+                        if abs(strike - current_price) / current_price > 0.10:
+                            continue
+                        
+                        oi = float(row.get('openInterest', 0) or 0)
+                        gamma = float(row.get('gamma', 0.0) or 0.0)
+                        delta = float(row.get('delta', 0.0) or 0.0)
+                        
+                        gex_val = multiplier * gamma * oi * 100 * (current_price ** 2) * 0.01 / 1e6
+                        dex_val = delta * oi * 100 * current_price / 1e6
+                        vanna_val = multiplier * (delta * 0.05) * oi * 100 / 1e6
+                        
+                        exp_gex += gex_val
+                        
+                        if strike not in strike_data:
+                            strike_data[strike] = {"gex": 0.0, "dex": 0.0, "vanna": 0.0}
+                        
+                        strike_data[strike]["gex"] += gex_val
+                        strike_data[strike]["dex"] += dex_val
+                        strike_data[strike]["vanna"] += vanna_val
+
+                exp_table_data.append({
+                    "date": exp,
+                    "vol": f"{round(exp_vol/1000, 2)}K",
+                    "oi": f"{round(exp_oi/1000, 2)}K",
+                    "net_gex": round(exp_gex, 2),
+                    "cp_ratio": cp_ratio
+                })
+            except Exception:
+                continue
+
+        sorted_strikes = sorted(strike_data.keys())
+        filtered_strikes = sorted_strikes[::2] if len(sorted_strikes) > 25 else sorted_strikes
 
         market_data[symbol] = {
             "price": round(current_price, 2),
-            "change_percent": round(change_pct, 2),
-            "expirations": expiration_dates[:8],
-            "gex": round(total_gex / 1e6, 25), # بالملايين ($M)
-            "dex": round(total_dex / 1e6, 2), # بالملايين ($M)
-            "volume": total_volume,
-            "open_interest": total_oi
+            "change_percent": change_pct,
+            "sparkline": sparkline,
+            "strikes": filtered_strikes,
+            "gex": [round(strike_data[s]["gex"], 2) for s in filtered_strikes],
+            "dex": [round(strike_data[s]["dex"], 2) for s in filtered_strikes],
+            "vanna": [round(strike_data[s]["vanna"], 2) for s in filtered_strikes],
+            "expirations_table": exp_table_data
         }
     except Exception as e:
-        print(f"Error fetching Greeks for {symbol}: {e}")
+        print(f"Error {symbol}: {e}")
 
 output = {
     "last_updated": datetime.now(timezone.utc).isoformat(),
@@ -71,4 +92,4 @@ output = {
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(output, f, indent=4)
 
-print("Advanced Greeks & Flow data.json updated successfully!")
+print("Pro GEXBot data updated successfully!")
