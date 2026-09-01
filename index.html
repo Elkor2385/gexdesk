@@ -3,53 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEXDESK - Pro Options & Greeks Terminal</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>GEXDESK PRO</title>
+    <!-- استدعاء مكتبة الشارت -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* هاد الستايل الأساسي باش يحافظ على الديزاين الكحل ديالك */
+        * { box-sizing: border-box; }
+        body { background-color: #0b0f17; color: #e2e8f0; font-family: -apple-system, sans-serif; margin: 0; padding: 15px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a2332; padding-bottom: 12px; margin-bottom: 15px; }
+        .logo-area h1 { margin: 0; font-size: 22px; color: #00f0ff; }
+        .badge { background: #0078ff; color: #fff; font-size: 10px; padding: 4px 8px; border-radius: 4px; margin-left: 10px; }
+        .tickers-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .ticker-card { background: #111726; border: 1px solid #1d293d; border-radius: 6px; padding: 10px; cursor: pointer; }
+        .ticker-card.active { border-color: #00f0ff; background: #162035; }
+        .symbol { font-weight: bold; font-size: 16px; color: #fff; }
+        .price { font-size: 15px; font-weight: 600; font-family: monospace; }
+        .positive { color: #00e676; } .negative { color: #ff1744; }
+        .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
+        .panel { background: #111726; border: 1px solid #1d293d; border-radius: 6px; padding: 15px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .level-tag { background: #1c293e; padding: 4px 8px; border-radius: 4px; border: 1px solid #2d3f5e; font-size: 11px; }
+        .level-tag span { color: #00f0ff; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        th, td { padding: 8px; border-bottom: 1px solid #1d293d; }
+        th { color: #94a3b8; }
+    </style>
 </head>
 <body>
     <header class="top-bar">
         <div class="logo-area">
-            <h1>GEXDESK</h1>
-            <span class="badge">PRO INTERACTIVE GREEKS</span>
+            <h1>GEXDESK <span class="badge">PRO INTERACTIVE GREEKS</span></h1>
         </div>
-        <div class="right-header">
-            <span id="last-update">Last Updated: Loading...</span>
+        <div id="last-update" style="color: #64748b; font-size: 12px;">
+            LIVE AUTO-FEED: Loading...
         </div>
     </header>
 
-    <main class="dashboard">
-        <section class="tickers-row" id="tickers-row"></section>
+    <!-- هنا فين كيترسمو الأسهم -->
+    <div id="tickers-row" class="tickers-row"></div>
 
-        <section class="analytics-grid">
-            <div class="panel chart-panel">
-                <h3 id="chart-title">ADVANCED GREEK EXPOSURE PROFILE</h3>
-                <div class="canvas-wrapper">
-                    <canvas id="strikeChart"></canvas>
-                </div>
+    <div class="analytics-grid">
+        <!-- قسم الشارت -->
+        <div class="panel">
+            <div class="chart-header">
+                <h3 id="chart-title" style="margin:0; font-size:13px; color:#94a3b8;">REAL-TIME GEX & OPTIONS FLOW</h3>
+                <div id="key-levels" style="display: flex; gap: 10px;"></div>
             </div>
-
-            <div class="panel table-panel">
-                <h3>0DTE & CALENDAR EXPIRATIONS - DENSE CHAIN DATA</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Volume</th>
-                                <th>Open Interest</th>
-                                <th>Net GEX ($M)</th>
-                                <th>C/P Ratio</th>
-                            </tr>
-                        </thead>
-                        <tbody id="exp-tbody"></tbody>
-                    </table>
-                </div>
-                <div class="footer-note">Powered by GEXDESK Engine</div>
+            <div style="position: relative; height: 400px; width: 100%;">
+                <canvas id="gexChart"></canvas>
             </div>
-        </section>
-    </main>
+        </div>
 
+        <!-- قسم الجدول -->
+        <div class="panel">
+            <h3 style="margin:0 0 10px 0; font-size:13px; color:#94a3b8;">0DTE & CALENDAR EXPIRATIONS - DENSE CHAIN DATA</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Volume</th>
+                        <th>Open Interest</th>
+                        <th>Net GEX ($M)</th>
+                        <th>C/P Ratio</th>
+                    </tr>
+                </thead>
+                <tbody id="exp-tbody">
+                    <!-- الجافاسكريبت غادي يعمر هاد البلاصة -->
+                </tbody>
+            </table>
+            <div style="text-align: right; font-size: 10px; color: #64748b; margin-top: 15px;">Powered by GEXDESK Engine</div>
+        </div>
+    </div>
+
+    <!-- استدعاء ملف الجافاسكريبت -->
     <script src="js/script.js"></script>
 </body>
 </html>
