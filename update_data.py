@@ -1,9 +1,16 @@
 import json
+import math
 from datetime import datetime, timezone
 import yfinance as yf
 
 tickers = ["SPY", "NVDA", "TSLA", "QQQ", "USO", "GLD", "SLV", "AAPL", "IBIT", "ETHA"]
 market_data = {}
+
+def clean_val(val, default=0.0):
+    """ تنظيف القيم الرياضية لتجنب NaN و Infinity التي تكسر JSON """
+    if val is None or math.isnan(val) or math.isinf(val):
+        return default
+    return float(val)
 
 for symbol in tickers:
     try:
@@ -11,10 +18,10 @@ for symbol in tickers:
         hist = tk.history(period="5d", interval="15m")
         
         if not hist.empty:
-            current_price = float(hist["Close"].iloc[-1])
-            prev_close = float(hist["Close"].iloc[0])
-            change_pct = round(((current_price - prev_close) / prev_close) * 100, 2)
-            sparkline = [round(p, 2) for p in hist["Close"].iloc[-20:].tolist()]
+            current_price = clean_val(hist["Close"].iloc[-1], 100.0)
+            prev_close = clean_val(hist["Close"].iloc[0], current_price)
+            change_pct = round(((current_price - prev_close) / prev_close) * 100, 2) if prev_close != 0 else 0.0
+            sparkline = [round(clean_val(p, current_price), 2) for p in hist["Close"].iloc[-25:].tolist()]
         else:
             current_price, change_pct, sparkline = 100.0, 0.0, []
 
@@ -22,7 +29,7 @@ for symbol in tickers:
         strike_data = {}
         exp_table_data = []
 
-        for exp in expiration_dates[:8]:
+        for exp in expiration_dates[:10]:
             try:
                 chain = tk.option_chain(exp)
                 calls, puts = chain.calls, chain.puts
@@ -33,52 +40,70 @@ for symbol in tickers:
                 put_vol = puts['volume'].fillna(0).sum()
                 cp_ratio = round(call_vol / put_vol, 2) if put_vol > 0 else 1.0
 
-                exp_gex = 0.0
-                
-                for df, multiplier in [(calls, 1), (puts, -1)]:
+                net_exp_gex = 0.0
+
+                for df, is_call in [(calls, True), (puts, False)]:
                     for _, row in df.iterrows():
-                        strike = float(row['strike'])
-                        if abs(strike - current_price) / current_price > 0.10:
+                        strike = clean_val(row['strike'])
+                        if strike == 0.0 or abs(strike - current_price) / current_price > 0.12:
                             continue
                         
-                        oi = float(row.get('openInterest', 0) or 0)
-                        gamma = float(row.get('gamma', 0.0) or 0.0)
-                        delta = float(row.get('delta', 0.0) or 0.0)
+                        oi = clean_val(row.get('openInterest', 0))
+                        gamma = clean_val(row.get('gamma', 0.0))
+                        delta = clean_val(row.get('delta', 0.0))
                         
-                        gex_val = multiplier * gamma * oi * 100 * (current_price ** 2) * 0.01 / 1e6
+                        gex_val = gamma * oi * 100 * (current_price ** 2) * 0.01 / 1e6
                         dex_val = delta * oi * 100 * current_price / 1e6
-                        vanna_val = multiplier * (delta * 0.05) * oi * 100 / 1e6
-                        
-                        exp_gex += gex_val
-                        
+                        vanna_val = (delta * 0.05) * oi * 100 / 1e6
+
                         if strike not in strike_data:
-                            strike_data[strike] = {"gex": 0.0, "dex": 0.0, "vanna": 0.0}
+                            strike_data[strike] = {"call_gex": 0.0, "put_gex": 0.0, "dex": 0.0, "vanna": 0.0}
                         
-                        strike_data[strike]["gex"] += gex_val
-                        strike_data[strike]["dex"] += dex_val
-                        strike_data[strike]["vanna"] += vanna_val
+                        if is_call:
+                            strike_data[strike]["call_gex"] += clean_val(gex_val)
+                            net_exp_gex += clean_val(gex_val)
+                        else:
+                            strike_data[strike]["put_gex"] -= clean_val(gex_val)
+                            net_exp_gex -= clean_val(gex_val)
+                        
+                        strike_data[strike]["dex"] += clean_val(dex_val)
+                        strike_data[strike]["vanna"] += clean_val(vanna_val if is_call else -vanna_val)
 
                 exp_table_data.append({
                     "date": exp,
-                    "vol": f"{round(exp_vol/1000, 2)}K",
-                    "oi": f"{round(exp_oi/1000, 2)}K",
-                    "net_gex": round(exp_gex, 2),
-                    "cp_ratio": cp_ratio
+                    "vol": f"{round(exp_vol/1000, 1)}K",
+                    "oi": f"{round(exp_oi/1000, 1)}K",
+                    "net_gex": round(clean_val(net_exp_gex), 2),
+                    "cp_ratio": clean_val(cp_ratio, 1.0)
                 })
             except Exception:
                 continue
 
         sorted_strikes = sorted(strike_data.keys())
-        filtered_strikes = sorted_strikes[::2] if len(sorted_strikes) > 25 else sorted_strikes
+        
+        if sorted_strikes:
+            max_call_wall = max(sorted_strikes, key=lambda s: strike_data[s]["call_gex"])
+            max_put_wall = min(sorted_strikes, key=lambda s: strike_data[s]["put_gex"])
+            gamma_flip = current_price
+            for s in sorted_strikes:
+                if (strike_data[s]["call_gex"] + strike_data[s]["put_gex"]) >= 0:
+                    gamma_flip = s
+                    break
+        else:
+            max_call_wall, max_put_wall, gamma_flip = current_price, current_price, current_price
 
         market_data[symbol] = {
             "price": round(current_price, 2),
             "change_percent": change_pct,
             "sparkline": sparkline,
-            "strikes": filtered_strikes,
-            "gex": [round(strike_data[s]["gex"], 2) for s in filtered_strikes],
-            "dex": [round(strike_data[s]["dex"], 2) for s in filtered_strikes],
-            "vanna": [round(strike_data[s]["vanna"], 2) for s in filtered_strikes],
+            "gamma_flip": round(gamma_flip, 2),
+            "call_wall": round(max_call_wall, 2),
+            "put_wall": round(max_put_wall, 2),
+            "strikes": sorted_strikes,
+            "call_gex": [round(clean_val(strike_data[s]["call_gex"]), 2) for s in sorted_strikes],
+            "put_gex": [round(clean_val(strike_data[s]["put_gex"]), 2) for s in sorted_strikes],
+            "dex": [round(clean_val(strike_data[s]["dex"]), 2) for s in sorted_strikes],
+            "vanna": [round(clean_val(strike_data[s]["vanna"]), 2) for s in sorted_strikes],
             "expirations_table": exp_table_data
         }
     except Exception as e:
@@ -92,4 +117,4 @@ output = {
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(output, f, indent=4)
 
-print("Pro GEXBot data updated successfully!")
+print("Clean JSON without NaNs generated successfully!")
