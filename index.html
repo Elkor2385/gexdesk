@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEXDESK - Options Greeks & Flow Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="top-bar">
+        <h1>GEXDESK <span class="badge">Live Options & Greeks</span></h1>
+        <div id="last-update">Last Updated: Loading...</div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- تيكرز السوق -->
+        <section class="tickers-grid" id="tickers-grid">
+            <!-- سيتم تعبئتها تلقائياً عبر JavaScript -->
+        </section>
+
+        <!-- قسم التحليلات والتفاصيل -->
+        <section class="analytics-section">
+            <div class="panel">
+                <h3>Options Flow & Greeks (GEX, DEX, Vanna)</h3>
+                <p class="placeholder-text">Select a ticker above to inspect live GEX profiles, Open Interest, Volume, and IV surface.</p>
+            </div>
+            <div class="panel">
+                <h3>0DTE & Calendar Expirations</h3>
+                <div id="expiration-list" class="exp-box">
+                    <span>Awaiting data...</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
