@@ -65,27 +65,37 @@ function updateDynamicValues() {
 
 function setMetric(metric) {
     currentMetric = metric;
+    // تحديث شكل الأزرار النشطة إذا لزم الأمر
+    document.querySelectorAll('.metric-buttons button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
     renderSymbolView(currentSymbol);
 }
 
 function updateChartData() {
     const item = globalData[currentSymbol];
     if (!item || !mainChart) return;
+    
     if (currentMetric === 'gex') {
-        mainChart.data.datasets[0].data = item.call_gex;
-        mainChart.data.datasets[1].data = item.put_gex;
+        mainChart.data.datasets[0].data = item.call_gex || [];
+        mainChart.data.datasets[1].data = item.put_gex || [];
         mainChart.data.datasets[0].label = 'Call GEX ($M)';
         mainChart.data.datasets[1].label = 'Put GEX ($M)';
+        mainChart.data.datasets[0].backgroundColor = '#00e676';
+        mainChart.data.datasets[1].backgroundColor = '#ff1744';
     } else if (currentMetric === 'dex') {
-        mainChart.data.datasets[0].data = item.dex;
-        mainChart.data.datasets[1].data = item.dex.map(v => -v);
+        mainChart.data.datasets[0].data = item.dex || [];
+        mainChart.data.datasets[1].data = (item.dex || []).map(v => -v);
         mainChart.data.datasets[0].label = 'DEX Exposure';
         mainChart.data.datasets[1].label = 'Inverted DEX';
+        mainChart.data.datasets[0].backgroundColor = '#00e676';
+        mainChart.data.datasets[1].backgroundColor = '#ff1744';
     } else if (currentMetric === 'vanna') {
-        mainChart.data.datasets[0].data = item.vanna;
-        mainChart.data.datasets[1].data = item.vanna.map(v => -v);
+        mainChart.data.datasets[0].data = item.vanna || [];
+        mainChart.data.datasets[1].data = (item.vanna || []).map(v => -v);
         mainChart.data.datasets[0].label = 'Vanna Impact';
         mainChart.data.datasets[1].label = 'Inverted Vanna';
+        mainChart.data.datasets[0].backgroundColor = '#00e676';
+        mainChart.data.datasets[1].backgroundColor = '#ff1744';
     }
     mainChart.update('none');
 }
@@ -112,14 +122,29 @@ function renderSymbolView(symbol) {
             const ctx = chartCanvas.getContext('2d');
             if (mainChart) mainChart.destroy();
 
+            // تجهيز البيانات الأولية حسب المقياس المختار حالياً
+            let initialDatasets = [
+                { label: 'Call GEX ($M)', data: item.call_gex || [], backgroundColor: '#00e676' },
+                { label: 'Put GEX ($M)', data: item.put_gex || [], backgroundColor: '#ff1744' }
+            ];
+
+            if (currentMetric === 'dex') {
+                initialDatasets = [
+                    { label: 'DEX Exposure', data: item.dex || [], backgroundColor: '#00e676' },
+                    { label: 'Inverted DEX', data: (item.dex || []).map(v => -v), backgroundColor: '#ff1744' }
+                ];
+            } else if (currentMetric === 'vanna') {
+                initialDatasets = [
+                    { label: 'Vanna Impact', data: item.vanna || [], backgroundColor: '#00e676' },
+                    { label: 'Inverted Vanna', data: (item.vanna || []).map(v => -v), backgroundColor: '#ff1744' }
+                ];
+            }
+
             mainChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: item.strikes || [],
-                    datasets: [
-                        { label: 'Call GEX ($M)', data: item.call_gex || [], backgroundColor: '#00e676' },
-                        { label: 'Put GEX ($M)', data: item.put_gex || [], backgroundColor: '#ff1744' }
-                    ]
+                    datasets: initialDatasets
                 },
                 options: {
                     responsive: true,
