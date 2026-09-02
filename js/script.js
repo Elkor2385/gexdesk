@@ -65,9 +65,10 @@ function updateDynamicValues() {
 
 function setMetric(metric) {
     currentMetric = metric;
-    // تحديث شكل الأزرار النشطة إذا لزم الأمر
     document.querySelectorAll('.metric-buttons button').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     renderSymbolView(currentSymbol);
 }
 
@@ -122,7 +123,6 @@ function renderSymbolView(symbol) {
             const ctx = chartCanvas.getContext('2d');
             if (mainChart) mainChart.destroy();
 
-            // تجهيز البيانات الأولية حسب المقياس المختار حالياً
             let initialDatasets = [
                 { label: 'Call GEX ($M)', data: item.call_gex || [], backgroundColor: '#00e676' },
                 { label: 'Put GEX ($M)', data: item.put_gex || [], backgroundColor: '#ff1744' }
@@ -150,10 +150,21 @@ function renderSymbolView(symbol) {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: { grid: { color: '#1d293d' }, ticks: { color: '#94a3b8' } },
-                        y: { grid: { color: '#1d293d' }, ticks: { color: '#94a3b8' } }
+                        x: { grid: { color: '#162035' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                        y: { grid: { color: '#162035' }, ticks: { color: '#64748b', font: { size: 10 } } }
                     },
-                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', font: { size: 11, weight: '600' } } },
+                        tooltip: {
+                            backgroundColor: '#162035',
+                            titleColor: '#00f0ff',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#1d293d',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true,
+                        }
+                    }
                 }
             });
             updateChartData();
