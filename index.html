@@ -21,9 +21,16 @@
         .positive { color: #00e676; } .negative { color: #ff1744; }
         .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
         .panel { background: #111726; border: 1px solid #1d293d; border-radius: 6px; padding: 15px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
         .level-tag { background: #1c293e; padding: 4px 8px; border-radius: 4px; border: 1px solid #2d3f5e; font-size: 11px; }
         .level-tag span { color: #00f0ff; font-weight: bold; }
+        
+        /* تنسيق أزرار المقاييس الجديدة */
+        .metric-buttons { display: flex; gap: 5px; margin-bottom: 10px; }
+        .metric-buttons button { background: #1c293e; border: 1px solid #2d3f5e; color: #94a3b8; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s; }
+        .metric-buttons button:hover { border-color: #00f0ff; color: #fff; }
+        .metric-buttons button.active { background: #00f0ff; color: #0b0f17; border-color: #00f0ff; }
+
         table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
         th, td { padding: 8px; border-bottom: 1px solid #1d293d; }
         th { color: #94a3b8; }
@@ -47,9 +54,17 @@
         <div class="panel">
             <div class="chart-header">
                 <h3 id="chart-title" style="margin:0; font-size:13px; color:#94a3b8;">REAL-TIME GEX & OPTIONS FLOW</h3>
-                <div id="key-levels" style="display: flex; gap: 10px;"></div>
+                <div id="key-levels" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
             </div>
-            <div style="position: relative; height: 400px; width: 100%;">
+            
+            <!-- أزرار التبديل بين GEX, DEX, Vanna -->
+            <div class="metric-buttons">
+                <button onclick="setMetric('gex')" class="active">GEX</button>
+                <button onclick="setMetric('dex')">DEX</button>
+                <button onclick="setMetric('vanna')">Vanna</button>
+            </div>
+
+            <div style="position: relative; height: 360px; width: 100%;">
                 <canvas id="gexChart"></canvas>
             </div>
         </div>
