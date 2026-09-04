@@ -1,122 +1,685 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEXDESK PRO - Institutional Options Flow</title>
-    <!-- استدعاء مكتبة الشارت -->
+    <title>GEXDESK NOVA - Elite Options Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Rajdhani', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        terminal: {
+                            bg: '#030305',
+                            panel: '#0a0a0e',
+                            border: '#1a1a24',
+                            highlight: '#14141d',
+                            green: '#00ff88',
+                            red: '#ff0055',
+                            cyan: '#00e5ff',
+                            purple: '#b300ff',
+                            text: '#c8c8d0',
+                            muted: '#5e5e70'
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { box-sizing: border-box; }
-        body { background-color: #07090e; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; }
+        body {
+            background-color: #030305;
+            color: #c8c8d0;
+            overflow: hidden; /* Hide body scroll, handle internally */
+        }
         
-        /* Top Bar */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a2332; padding-bottom: 15px; margin-bottom: 20px; }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-area h1 { margin: 0; font-size: 24px; font-weight: 800; color: #00f0ff; letter-spacing: 0.5px; text-shadow: 0 0 15px rgba(0,240,255,0.3); }
-        .badge { background: linear-gradient(135deg, #0078ff, #00f0ff); color: #0b0f17; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; }
+        /* Cyberpunk Grid Background */
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center center;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #030305; }
+        ::-webkit-scrollbar-thumb { background: #1a1a24; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Terminal Panel Aesthetics */
+        .t-panel {
+            background: #0a0a0e;
+            border: 1px solid #1a1a24;
+            position: relative;
+        }
         
-        .live-indicator { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; background: #111726; padding: 6px 12px; border: 1px solid #1d293d; border-radius: 20px; }
-        .pulse-dot { width: 8px; height: 8px; background-color: #00e676; border-radius: 50%; box-shadow: 0 0 8px #00e676; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-        /* Tickers Row */
-        .tickers-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .ticker-card { background: #111726; border: 1px solid #1d293d; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s ease; }
-        .ticker-card:hover { border-color: #00f0ff55; transform: translateY(-2px); }
-        .ticker-card.active { border-color: #00f0ff; background: linear-gradient(145deg, #162035, #111726); box-shadow: 0 0 15px rgba(0,240,255,0.1); }
-        .symbol { font-weight: 700; font-size: 15px; color: #fff; }
-        .price { font-size: 15px; font-weight: 600; font-family: monospace; color: #f8fafc; }
-        .positive { color: #00e676; font-weight: 600; } 
-        .negative { color: #ff1744; font-weight: 600; }
-
-        /* Analytics Grid */
-        .analytics-grid { display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; }
-        .panel { background: #111726; border: 1px solid #1d293d; border-radius: 8px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        /* Subtle glow for active elements */
+        .glow-cyan { text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
+        .glow-green { text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+        .glow-red { text-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
         
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 12px; }
-        .levels-container { display: flex; gap: 8px; flex-wrap: wrap; }
-        .level-tag { background: #162035; padding: 6px 10px; border-radius: 6px; border: 1px solid #2d3f5e; font-size: 11px; font-weight: 500; color: #94a3b8; }
-        .level-tag span { color: #00f0ff; font-weight: 700; font-family: monospace; }
+        .box-glow-cyan { box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.05), 0 0 10px rgba(0, 229, 255, 0.1); }
         
-        /* Metric Switcher Buttons */
-        .metric-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #1d293d; padding-bottom: 12px; }
-        .metric-buttons { display: flex; gap: 6px; }
-        .metric-buttons button { background: #162035; border: 1px solid #2d3f5e; color: #94a3b8; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; transition: all 0.2s; }
-        .metric-buttons button:hover { border-color: #00f0ff; color: #fff; }
-        .metric-buttons button.active { background: #00f0ff; color: #07090e; border-color: #00f0ff; box-shadow: 0 0 10px rgba(0,240,255,0.3); }
-
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        th, td { padding: 10px 8px; border-bottom: 1px solid #1d293d; }
-        th { color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
-        tr:hover td { background: rgba(255,255,255,0.01); }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .analytics-grid { grid-template-columns: 1fr; }
+        /* Blinking dot for live status */
+        .live-dot {
+            height: 6px; width: 6px; background-color: #00ff88;
+            border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 8px #00ff88;
         }
     </style>
 </head>
-<body>
-    <header class="top-bar">
-        <div class="logo-area">
-            <h1>GEXDESK</h1>
-            <span class="badge">PRO TERMINAL</span>
+<body class="h-screen w-screen flex flex-col font-sans bg-grid">
+
+    <!-- Top Ticker Tape -->
+    <div class="h-8 border-b border-terminal-border bg-terminal-panel flex items-center overflow-hidden font-mono text-[10px] whitespace-nowrap z-50">
+        <div class="bg-terminal-cyan text-black font-bold px-3 h-full flex items-center z-10 uppercase">
+            Live Feed
         </div>
-        <div class="live-indicator">
-            <div class="pulse-dot"></div>
-            <span id="last-update">LIVE AUTO-FEED: Connecting...</span>
-        </div>
-    </header>
-
-    <!-- Tickers Bar -->
-    <div id="tickers-row" class="tickers-row"></div>
-
-    <div class="analytics-grid">
-        <!-- Chart Panel -->
-        <div class="panel">
-            <div class="chart-header">
-                <h3 id="chart-title" style="margin:0; font-size:14px; color:#f8fafc; font-weight: 600;">SPY - GREEKS & OPTIONS FLOW</h3>
-                <div id="key-levels" class="levels-container"></div>
+        <div class="flex-1 relative flex items-center">
+            <div class="animate-marquee flex items-center space-x-8 px-4" id="ticker-content">
+                <!-- Injected via JS -->
             </div>
-            
-            <div class="metric-toolbar">
-                <div class="metric-buttons">
-                    <button onclick="setMetric('gex')" class="active">GEX (Gamma)</button>
-                    <button onclick="setMetric('dex')">DEX (Delta)</button>
-                    <button onclick="setMetric('vanna')">Vanna</button>
-                </div>
-                <div style="font-size: 11px; color: #64748b;">Values in Millions ($M)</div>
+            <!-- Duplicate for seamless scroll -->
+            <div class="animate-marquee flex items-center space-x-8 px-4 absolute top-0 left-full h-full" id="ticker-content-2">
+                <!-- Injected via JS -->
             </div>
-
-            <div style="position: relative; height: 380px; width: 100%;">
-                <canvas id="gexChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Expirations Table Panel -->
-        <div class="panel">
-            <h3 style="margin:0 0 15px 0; font-size:13px; color:#f8fafc; font-weight: 600; letter-spacing: 0.3px;">0DTE & CALENDAR CHAIN</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Volume</th>
-                        <th>Open Int</th>
-                        <th>Net GEX</th>
-                        <th>C/P Ratio</th>
-                    </tr>
-                </thead>
-                <tbody id="exp-tbody">
-                    <!-- Dynamic Data -->
-                </tbody>
-            </table>
-            <div style="text-align: right; font-size: 10px; color: #475569; margin-top: 20px; font-weight: 500;">Institutional Analytics Engine v2.5</div>
         </div>
     </div>
 
-    <!-- Script File -->
-    <script src="js/script.js"></script>
+    <!-- Main Application Area -->
+    <div class="flex flex-1 h-[calc(100vh-2rem)] overflow-hidden">
+        
+        <!-- Slim Sidebar Navigation -->
+        <aside class="w-14 border-r border-terminal-border bg-terminal-bg flex flex-col items-center py-4 space-y-6 z-40">
+            <div class="w-8 h-8 rounded bg-terminal-panel border border-terminal-cyan/50 flex items-center justify-center box-glow-cyan cursor-pointer">
+                <span class="font-mono font-bold text-terminal-cyan text-xs">NX</span>
+            </div>
+            
+            <nav class="flex flex-col space-y-4 w-full px-2">
+                <button class="w-full aspect-square rounded flex items-center justify-center text-terminal-cyan bg-terminal-highlight border border-terminal-border transition-colors group relative" title="Dashboard">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <div class="absolute left-12 bg-terminal-panel border border-terminal-border text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 font-mono pointer-events-none whitespace-nowrap z-50">Terminal</div>
+                </button>
+                <button class="w-full aspect-square rounded flex items-center justify-center text-terminal-muted hover:text-white transition-colors group relative" title="Whale Flow">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <div class="absolute left-12 bg-terminal-panel border border-terminal-border text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 font-mono pointer-events-none whitespace-nowrap z-50">Order Flow</div>
+                </button>
+                <button class="w-full aspect-square rounded flex items-center justify-center text-terminal-muted hover:text-white transition-colors group relative" title="Volatility">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <div class="absolute left-12 bg-terminal-panel border border-terminal-border text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 font-mono pointer-events-none whitespace-nowrap z-50">Volatility</div>
+                </button>
+                <button class="w-full aspect-square rounded flex items-center justify-center text-terminal-muted hover:text-white transition-colors group relative" title="Settings">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <div class="absolute left-12 bg-terminal-panel border border-terminal-border text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 font-mono pointer-events-none whitespace-nowrap z-50">Settings</div>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Dashboard -->
+        <main class="flex-1 p-3 overflow-hidden flex flex-col space-y-3">
+            
+            <!-- Context Bar (Symbol & Expiry) -->
+            <div class="flex items-center justify-between t-panel p-2">
+                <div class="flex items-center space-x-4 overflow-x-auto no-scrollbar" id="symbol-bar">
+                    <!-- Symbols injected here -->
+                </div>
+                
+                <div class="flex items-center space-x-3 border-l border-terminal-border pl-4">
+                    <span class="text-[10px] text-terminal-muted font-mono uppercase tracking-widest">Expiry</span>
+                    <select id="expiry-select" onchange="changeExpiry()" class="bg-terminal-highlight border border-terminal-border text-terminal-cyan text-xs font-mono py-1 px-2 focus:outline-none cursor-pointer">
+                        <option value="0">0DTE (Today)</option>
+                        <option value="1">1DTE (Tomorrow)</option>
+                        <option value="5">Weekly (Fri)</option>
+                        <option value="20">Monthly</option>
+                    </select>
+                    <div class="flex items-center space-x-1.5 px-2">
+                        <span class="live-dot animate-pulse-fast"></span>
+                        <span class="text-[10px] font-mono text-terminal-green uppercase">Connected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Section: Chart & Stats -->
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-3 min-h-[40vh]">
+                
+                <!-- Main Chart Panel (Spans 3 cols) -->
+                <div class="lg:col-span-3 t-panel flex flex-col relative">
+                    <!-- Decorators -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-terminal-cyan"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-terminal-cyan"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-terminal-cyan"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-terminal-cyan"></div>
+
+                    <!-- Chart Header -->
+                    <div class="flex justify-between items-center p-3 border-b border-terminal-border">
+                        <div class="flex items-baseline space-x-3">
+                            <h2 class="text-xl font-bold font-mono text-white tracking-wider" id="chart-title">SPY</h2>
+                            <span class="text-xs font-mono text-terminal-muted">INSTITUTIONAL GAMMA EXPOSURE (GEX)</span>
+                        </div>
+                        <div class="flex space-x-2 font-mono text-[10px]">
+                            <button onclick="setMetric('gex')" class="metric-btn px-3 py-1 bg-terminal-cyan text-black font-bold" data-metric="gex">NET GEX</button>
+                            <button onclick="setMetric('dex')" class="metric-btn px-3 py-1 bg-terminal-highlight text-terminal-muted border border-terminal-border hover:text-white" data-metric="dex">DELTA</button>
+                            <button onclick="setMetric('vanna')" class="metric-btn px-3 py-1 bg-terminal-highlight text-terminal-muted border border-terminal-border hover:text-white" data-metric="vanna">VANNA</button>
+                        </div>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div class="flex-1 p-2 relative">
+                        <!-- Key Levels Overlay (Absolute positioned) -->
+                        <div id="chart-overlays" class="absolute inset-0 pointer-events-none z-10 p-2 overflow-hidden">
+                            <!-- Lines generated by JS -->
+                        </div>
+                        <canvas id="novaChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Quant Stats Panel (Spans 1 col) -->
+                <div class="t-panel flex flex-col">
+                    <div class="p-3 border-b border-terminal-border bg-terminal-highlight/50">
+                        <h3 class="text-[11px] font-mono font-bold text-terminal-cyan uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Quant Engine
+                        </h3>
+                    </div>
+                    
+                    <div class="flex-1 p-3 flex flex-col space-y-4 overflow-y-auto no-scrollbar">
+                        <!-- Stat Block -->
+                        <div class="space-y-1">
+                            <div class="text-[10px] font-mono text-terminal-muted uppercase">Market Price</div>
+                            <div class="text-xl font-mono font-bold text-white flex items-center justify-between">
+                                <span id="stat-price">0.00</span>
+                                <span id="stat-change" class="text-xs px-2 py-0.5 rounded bg-terminal-green/10 text-terminal-green">+0.00%</span>
+                            </div>
+                        </div>
+
+                        <!-- Technical Levels -->
+                        <div class="space-y-2 pt-3 border-t border-terminal-border/50">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-terminal-muted">Call Wall (Resistance)</span>
+                                <span id="stat-callwall" class="text-terminal-green font-bold">0.00</span>
+                            </div>
+                            <div class="w-full h-1 bg-terminal-border"><div class="h-full bg-terminal-green w-[85%]"></div></div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-terminal-cyan">Gamma Flip (Pivot)</span>
+                                <span id="stat-flip" class="text-terminal-cyan font-bold">0.00</span>
+                            </div>
+                            <div class="w-full h-1 bg-terminal-border"><div class="h-full bg-terminal-cyan w-[50%]"></div></div>
+                        </div>
+
+                        <div class="space-y-2 pb-3 border-b border-terminal-border/50">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-terminal-muted">Put Wall (Support)</span>
+                                <span id="stat-putwall" class="text-terminal-red font-bold">0.00</span>
+                            </div>
+                            <div class="w-full h-1 bg-terminal-border"><div class="h-full bg-terminal-red w-[70%]"></div></div>
+                        </div>
+
+                        <!-- Volatility & Greeks -->
+                        <div class="grid grid-cols-2 gap-2 text-[10px] font-mono flex-1">
+                            <div class="bg-terminal-highlight p-2 border border-terminal-border">
+                                <div class="text-terminal-muted mb-1">Total Net GEX</div>
+                                <div id="stat-netgex" class="text-terminal-green text-xs font-bold glow-green">+$1.4B</div>
+                            </div>
+                            <div class="bg-terminal-highlight p-2 border border-terminal-border">
+                                <div class="text-terminal-muted mb-1">Implied Vol</div>
+                                <div id="stat-iv" class="text-white text-xs font-bold">14.2%</div>
+                            </div>
+                            <div class="bg-terminal-highlight p-2 border border-terminal-border">
+                                <div class="text-terminal-muted mb-1">Charm (Decay)</div>
+                                <div class="text-terminal-cyan text-xs font-bold">342M</div>
+                            </div>
+                            <div class="bg-terminal-highlight p-2 border border-terminal-border">
+                                <div class="text-terminal-muted mb-1">Squeeze Risk</div>
+                                <div class="text-terminal-red text-xs font-bold">HIGH</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section: Matrix & Whale Radar -->
+            <div class="h-1/3 min-h-[250px] grid grid-cols-1 lg:grid-cols-2 gap-3">
+                
+                <!-- Strike Matrix -->
+                <div class="t-panel flex flex-col">
+                    <div class="flex justify-between items-center p-2 border-b border-terminal-border bg-terminal-highlight/30">
+                        <h3 class="text-[11px] font-mono font-bold text-white uppercase tracking-widest">Order Book / Strike Matrix</h3>
+                        <span class="text-[9px] font-mono px-2 py-0.5 bg-terminal-border text-terminal-muted">L2 Data</span>
+                    </div>
+                    <div class="flex-1 overflow-auto no-scrollbar relative">
+                        <table class="w-full text-right font-mono text-[10px]">
+                            <thead class="sticky top-0 bg-terminal-panel z-10 border-b border-terminal-border shadow-md">
+                                <tr class="text-terminal-muted">
+                                    <th class="py-2 px-3 text-left">STRIKE</th>
+                                    <th class="py-2 px-3">NET GEX</th>
+                                    <th class="py-2 px-3">CALL VOL</th>
+                                    <th class="py-2 px-3">PUT VOL</th>
+                                    <th class="py-2 px-3">IV</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-tbody" class="divide-y divide-terminal-border/30 text-terminal-text">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Whale Radar -->
+                <div class="t-panel flex flex-col">
+                    <div class="flex justify-between items-center p-2 border-b border-terminal-border bg-terminal-highlight/30">
+                        <h3 class="text-[11px] font-mono font-bold text-terminal-purple uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Whale Sweep Radar
+                        </h3>
+                        <span class="live-dot animate-pulse-fast bg-terminal-purple shadow-[0_0_8px_#b300ff]"></span>
+                    </div>
+                    <div class="flex-1 overflow-auto no-scrollbar relative p-2 space-y-2 bg-[#050508]" id="radar-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- DATA LAYER ---
+        const MARKET_DATA = {
+            'SPY': { price: 512.40, change: 0.85, callWall: 520, putWall: 500, flip: 510, iv: '12.4', netGex: '+2.1B' },
+            'QQQ': { price: 445.10, change: 1.20, callWall: 450, putWall: 435, flip: 442, iv: '15.8', netGex: '+1.4B' },
+            'NVDA': { price: 890.25, change: -2.15, callWall: 920, putWall: 850, flip: 885, iv: '45.2', netGex: '-850M' },
+            'TSLA': { price: 175.50, change: -0.50, callWall: 190, putWall: 165, flip: 180, iv: '48.1', netGex: '-420M' },
+            'AAPL': { price: 172.80, change: 0.15, callWall: 180, putWall: 165, flip: 170, iv: '18.5', netGex: '+980M' },
+            'BTC': { price: 68400, change: 4.20, callWall: 72000, putWall: 65000, flip: 67500, iv: '65.0', netGex: '+3.2B' }
+        };
+
+        let currentSymbol = 'SPY';
+        let currentMetric = 'gex';
+        let chartInstance = null;
+
+        // Colors
+        const C = {
+            bg: '#030305',
+            grid: 'rgba(30, 30, 40, 0.4)',
+            text: '#9aa0a6',
+            green: '#00ff88',
+            greenFill: 'rgba(0, 255, 136, 0.15)',
+            red: '#ff0055',
+            redFill: 'rgba(255, 0, 85, 0.15)',
+            cyan: '#00e5ff',
+            purple: '#b300ff'
+        };
+
+        // --- UI INITIALIZATION ---
+        function initApp() {
+            renderSymbolBar();
+            updateStatsPanel();
+            initTicker();
+            initChart();
+            renderMatrix();
+            renderRadar();
+            
+            // Simulation loop
+            setInterval(simulateLiveData, 2500);
+        }
+
+        function renderSymbolBar() {
+            const bar = document.getElementById('symbol-bar');
+            bar.innerHTML = '';
+            
+            Object.keys(MARKET_DATA).forEach(sym => {
+                const data = MARKET_DATA[sym];
+                const isSelected = sym === currentSymbol;
+                const isPos = data.change >= 0;
+                const colorClass = isPos ? 'text-terminal-green' : 'text-terminal-red';
+                const bgClass = isSelected ? 'bg-terminal-highlight border-terminal-cyan box-glow-cyan' : 'bg-transparent border-transparent hover:bg-terminal-highlight/50';
+                
+                const btn = document.createElement('button');
+                btn.className = `flex flex-col px-3 py-1 border-b-2 transition-all min-w-[80px] ${bgClass}`;
+                btn.onclick = () => selectSymbol(sym);
+                btn.innerHTML = `
+                    <span class="font-mono text-xs font-bold ${isSelected ? 'text-white' : 'text-terminal-text'}">${sym}</span>
+                    <div class="flex items-center space-x-2 text-[10px] font-mono">
+                        <span>${data.price}</span>
+                        <span class="${colorClass}">${isPos?'+':''}${data.change}%</span>
+                    </div>
+                `;
+                bar.appendChild(btn);
+            });
+        }
+
+        function selectSymbol(sym) {
+            currentSymbol = sym;
+            renderSymbolBar();
+            updateStatsPanel();
+            updateChartData();
+            renderMatrix();
+        }
+
+        function setMetric(metric) {
+            currentMetric = metric;
+            document.querySelectorAll('.metric-btn').forEach(btn => {
+                if(btn.dataset.metric === metric) {
+                    btn.className = `metric-btn px-3 py-1 bg-terminal-cyan text-black font-bold`;
+                } else {
+                    btn.className = `metric-btn px-3 py-1 bg-terminal-highlight text-terminal-muted border border-terminal-border hover:text-white`;
+                }
+            });
+            updateChartData();
+        }
+
+        function changeExpiry() {
+            updateChartData();
+            renderMatrix();
+        }
+
+        function updateStatsPanel() {
+            const data = MARKET_DATA[currentSymbol];
+            const isPos = data.change >= 0;
+            
+            document.getElementById('chart-title').innerText = currentSymbol;
+            document.getElementById('stat-price').innerText = data.price.toFixed(2);
+            
+            const changeEl = document.getElementById('stat-change');
+            changeEl.innerText = `${isPos?'+':''}${data.change}%`;
+            changeEl.className = `text-xs px-2 py-0.5 rounded ${isPos ? 'bg-terminal-green/10 text-terminal-green' : 'bg-terminal-red/10 text-terminal-red'}`;
+            
+            document.getElementById('stat-callwall').innerText = data.callWall;
+            document.getElementById('stat-putwall').innerText = data.putWall;
+            document.getElementById('stat-flip').innerText = data.flip;
+            
+            const gexEl = document.getElementById('stat-netgex');
+            gexEl.innerText = data.netGex;
+            gexEl.className = `text-xs font-bold ${data.netGex.includes('+') ? 'text-terminal-green glow-green' : 'text-terminal-red glow-red'}`;
+            
+            document.getElementById('stat-iv').innerText = data.iv + '%';
+        }
+
+        function initTicker() {
+            const msgs = [
+                "GS SECURES BLOCK TRADE IN TSLA", "JPM REVISES END OF YEAR TARGET", 
+                "HEAVY CALL SWEEP DETECTED IN NVDA 900C", "VIX DROPS BELOW 13", 
+                "DARK POOL PRINT SPY $5.2B AT 512.45", "AAPL OPTIONS VOLUMES +300% VS 30D AVG"
+            ];
+            const html = msgs.map(m => `<span class="flex items-center space-x-2"><span class="w-1.5 h-1.5 bg-terminal-cyan rounded-full"></span><span>${m}</span></span>`).join('');
+            document.getElementById('ticker-content').innerHTML = html;
+            document.getElementById('ticker-content-2').innerHTML = html;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('novaChart').getContext('2d');
+            
+            // Gradient for Positive (Calls)
+            const gradientPos = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientPos.addColorStop(0, 'rgba(0, 255, 136, 0.4)');
+            gradientPos.addColorStop(1, 'rgba(0, 255, 136, 0.0)');
+
+            // Gradient for Negative (Puts)
+            const gradientNeg = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientNeg.addColorStop(0, 'rgba(255, 0, 85, 0.4)');
+            gradientNeg.addColorStop(1, 'rgba(255, 0, 85, 0.0)');
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Positive GEX (Calls)',
+                            data: [],
+                            borderColor: C.green,
+                            borderWidth: 2,
+                            backgroundColor: gradientPos,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            pointBackgroundColor: '#fff'
+                        },
+                        {
+                            label: 'Negative GEX (Puts)',
+                            data: [],
+                            borderColor: C.red,
+                            borderWidth: 2,
+                            backgroundColor: gradientNeg,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            pointBackgroundColor: '#fff'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 14, 0.95)',
+                            titleFont: { family: 'JetBrains Mono', size: 12 },
+                            bodyFont: { family: 'JetBrains Mono', size: 11 },
+                            borderColor: '#1a1a24',
+                            borderWidth: 1,
+                            cornerRadius: 4,
+                            callbacks: {
+                                title: (ctx) => `STRIKE: ${ctx[0].label}`,
+                                label: (ctx) => {
+                                    const val = ctx.raw;
+                                    if(val === null) return null;
+                                    const sign = val >= 0 ? '+' : '';
+                                    return ` GEX: ${sign}${val}M`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: C.grid, drawBorder: false },
+                            ticks: { color: C.text, font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            grid: { color: C.grid, drawBorder: false },
+                            ticks: { color: C.text, font: { family: 'JetBrains Mono', size: 9 }, callback: (val) => val + 'M' }
+                        }
+                    }
+                }
+            });
+
+            updateChartData();
+        }
+
+        function updateChartData() {
+            const data = MARKET_DATA[currentSymbol];
+            const base = data.price;
+            const step = base > 1000 ? 50 : (base > 100 ? 5 : 1);
+            
+            const labels = [];
+            const posData = [];
+            const negData = [];
+            
+            // Generate synthetic realistic distribution
+            for(let i = -10; i <= 10; i++) {
+                const strike = Math.round(base + (i * step));
+                labels.push(strike);
+                
+                // Peak around Call Wall and Put Wall
+                let posVal = 0;
+                let negVal = 0;
+                
+                const distToCall = Math.abs(strike - data.callWall);
+                const distToPut = Math.abs(strike - data.putWall);
+                
+                if (strike >= data.flip) {
+                    posVal = Math.max(0, 500 - (distToCall * 10)) + (Math.random() * 50);
+                    negVal = null; // Only show positive above flip
+                } else {
+                    posVal = null;
+                    negVal = -(Math.max(0, 400 - (distToPut * 10)) + (Math.random() * 50));
+                }
+                
+                // Smoothing at the flip point
+                if (Math.abs(strike - data.flip) <= step) {
+                    posVal = (Math.random() * 50);
+                    negVal = -(Math.random() * 50);
+                }
+
+                if(currentMetric !== 'gex') {
+                    // Just randomize for other metrics for demo
+                    posVal = posVal ? posVal * 0.5 : null;
+                    negVal = negVal ? negVal * 0.5 : null;
+                }
+
+                posData.push(posVal !== null ? Math.round(posVal) : null);
+                negData.push(negVal !== null ? Math.round(negVal) : null);
+            }
+
+            chartInstance.data.labels = labels;
+            chartInstance.data.datasets[0].data = posData;
+            chartInstance.data.datasets[1].data = negData;
+            chartInstance.update();
+            
+            drawChartOverlays(labels, data);
+        }
+
+        function drawChartOverlays(labels, data) {
+            const container = document.getElementById('chart-overlays');
+            container.innerHTML = '';
+            
+            // We approximate position by index (rough for visual effect)
+            const drawLine = (val, color, text) => {
+                const idx = labels.findIndex(l => l >= val);
+                if(idx === -1) return;
+                const percent = (idx / (labels.length - 1)) * 100;
+                
+                container.innerHTML += `
+                    <div class="absolute top-0 bottom-0 border-l border-dashed border-[${color}] opacity-60 pointer-events-none" style="left: ${percent}%; border-color: ${color};">
+                        <div class="bg-[${color}] text-black text-[9px] font-bold font-mono px-1 py-0.5 mt-2 ml-1 whitespace-nowrap rounded-sm" style="background-color: ${color};">${text}</div>
+                    </div>
+                `;
+            };
+
+            drawLine(data.putWall, C.red, 'PUT WALL');
+            drawLine(data.flip, C.cyan, 'GAMMA FLIP');
+            drawLine(data.callWall, C.green, 'CALL WALL');
+        }
+
+        function renderMatrix() {
+            const tbody = document.getElementById('matrix-tbody');
+            tbody.innerHTML = '';
+            const data = MARKET_DATA[currentSymbol];
+            const base = data.price;
+            const step = base > 100 ? 5 : 1;
+
+            for(let i = -7; i <= 7; i++) {
+                const strike = Math.round(base + (i * step));
+                const isCall = i > 0;
+                const gex = (Math.random() * 300).toFixed(1);
+                const gexSign = isCall ? '+' : '-';
+                const gexColor = isCall ? 'text-terminal-green' : 'text-terminal-red';
+                const cVol = Math.floor(Math.random() * 15000);
+                const pVol = Math.floor(Math.random() * 15000);
+                const iv = (parseFloat(data.iv) + Math.abs(i)*0.2).toFixed(1);
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-terminal-highlight/40 cursor-crosshair transition-colors";
+                tr.innerHTML = `
+                    <td class="py-2 px-3 text-left text-white font-bold">${strike}</td>
+                    <td class="py-2 px-3 ${gexColor}">${gexSign}${gex}M</td>
+                    <td class="py-2 px-3">${cVol.toLocaleString()}</td>
+                    <td class="py-2 px-3">${pVol.toLocaleString()}</td>
+                    <td class="py-2 px-3 text-terminal-cyan">${iv}%</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function renderRadar() {
+            const container = document.getElementById('radar-container');
+            container.innerHTML = '';
+            
+            const flowTypes = ['SWEEP', 'BLOCK', 'SPLIT'];
+            const sentiments = ['BULLISH', 'BEARISH'];
+            
+            for(let i=0; i<8; i++) {
+                addRadarItem(container, flowTypes, sentiments, i === 0);
+            }
+        }
+
+        function addRadarItem(container, flowTypes, sentiments, isNew = false) {
+            const type = flowTypes[Math.floor(Math.random() * flowTypes.length)];
+            const sent = sentiments[Math.floor(Math.random() * sentiments.length)];
+            const sym = Object.keys(MARKET_DATA)[Math.floor(Math.random() * 6)];
+            const size = (Math.random() * 5 + 1).toFixed(1);
+            
+            const isBull = sent === 'BULLISH';
+            const color = isBull ? 'text-terminal-green' : 'text-terminal-red';
+            const bgHover = isBull ? 'hover:border-terminal-green/50' : 'hover:border-terminal-red/50';
+            
+            const div = document.createElement('div');
+            div.className = `p-2 border border-terminal-border bg-terminal-panel font-mono text-[10px] flex justify-between items-center transition-all ${bgHover} ${isNew ? 'animate-pulse' : ''}`;
+            if(isNew) div.style.animationIterationCount = "3";
+
+            div.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span class="font-bold text-white w-10">${sym}</span>
+                    <span class="px-1.5 py-0.5 bg-terminal-highlight text-terminal-purple rounded-sm">${type}</span>
+                    <span class="${color}">${sent}</span>
+                </div>
+                <div class="font-bold text-white">$${size}M</div>
+            `;
+            
+            if(isNew && container.children.length > 0) {
+                container.insertBefore(div, container.firstChild);
+                if(container.children.length > 10) container.lastChild.remove();
+            } else {
+                container.appendChild(div);
+            }
+        }
+
+        function simulateLiveData() {
+            // Jitter price slightly
+            const data = MARKET_DATA[currentSymbol];
+            const jitter = (Math.random() - 0.5) * 0.5;
+            data.price += jitter;
+            document.getElementById('stat-price').innerText = data.price.toFixed(2);
+            
+            // Randomly add a new whale order
+            if(Math.random() > 0.6) {
+                const container = document.getElementById('radar-container');
+                addRadarItem(container, ['SWEEP', 'BLOCK', 'SPLIT'], ['BULLISH', 'BEARISH'], true);
+            }
+        }
+
+        // Start
+        window.onload = initApp;
+
+    </script>
 </body>
 </html>
