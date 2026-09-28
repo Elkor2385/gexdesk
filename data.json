@@ -1,19 +1,19 @@
 {
-    "last_updated": "2026-09-28T20:10:44.204493",
+    "last_updated": "2026-09-28T20:29:26.485244",
     "data": {
         "SPY": {
-            "price": 765.55,
-            "change_percent": -0.75,
+            "price": 765.61,
+            "change_percent": -0.74,
             "sparkline": [
                 773.38,
                 767.81,
                 767.18,
                 771.35,
-                765.55
+                765.61
             ],
-            "gamma_flip": 759.43,
-            "call_wall": 779.33,
-            "put_wall": 751.77,
+            "gamma_flip": 759.49,
+            "call_wall": 779.39,
+            "put_wall": 751.83,
             "strikes": [
                 690.0,
                 695.0,
@@ -557,58 +557,58 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "9205.5K",
+                    "vol": "9325.1K",
                     "oi": "402.6K",
-                    "net_gex": 18410.99,
+                    "net_gex": 18650.27,
                     "cp_ratio": 0.95
                 },
                 {
                     "date": "2026-09-29",
-                    "vol": "1222.7K",
+                    "vol": "1341.3K",
                     "oi": "173.4K",
-                    "net_gex": 2445.33,
-                    "cp_ratio": 1.01
+                    "net_gex": 2682.56,
+                    "cp_ratio": 1.04
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "570.7K",
+                    "vol": "601.1K",
                     "oi": "2469.6K",
-                    "net_gex": 1141.5,
-                    "cp_ratio": 1.12
+                    "net_gex": 1202.19,
+                    "cp_ratio": 1.11
                 },
                 {
                     "date": "2026-10-01",
-                    "vol": "153.5K",
+                    "vol": "164.3K",
                     "oi": "107.7K",
-                    "net_gex": 306.97,
-                    "cp_ratio": 1.0
+                    "net_gex": 328.7,
+                    "cp_ratio": 0.95
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "522.8K",
+                    "vol": "537.2K",
                     "oi": "564.2K",
-                    "net_gex": 1045.66,
-                    "cp_ratio": 0.72
+                    "net_gex": 1074.38,
+                    "cp_ratio": 0.73
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "126.6K",
+                    "vol": "130.5K",
                     "oi": "49.6K",
-                    "net_gex": 253.2,
-                    "cp_ratio": 0.84
+                    "net_gex": 261.0,
+                    "cp_ratio": 0.85
                 },
                 {
                     "date": "2026-10-06",
-                    "vol": "22.2K",
+                    "vol": "23.1K",
                     "oi": "22.9K",
-                    "net_gex": 44.32,
-                    "cp_ratio": 1.19
+                    "net_gex": 46.28,
+                    "cp_ratio": 1.2
                 },
                 {
                     "date": "2026-10-07",
-                    "vol": "51.8K",
+                    "vol": "52.2K",
                     "oi": "14.7K",
-                    "net_gex": 103.56,
+                    "net_gex": 104.44,
                     "cp_ratio": 0.2
                 }
             ]
@@ -729,59 +729,59 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "2235.0K",
+                    "vol": "2241.7K",
                     "oi": "185.6K",
-                    "net_gex": 4469.94,
+                    "net_gex": 4483.48,
                     "cp_ratio": 2.54
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "546.4K",
+                    "vol": "561.7K",
                     "oi": "96.8K",
-                    "net_gex": 1092.81,
-                    "cp_ratio": 2.24
+                    "net_gex": 1123.48,
+                    "cp_ratio": 2.22
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "569.5K",
+                    "vol": "578.1K",
                     "oi": "714.9K",
-                    "net_gex": 1138.97,
+                    "net_gex": 1156.22,
                     "cp_ratio": 2.26
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "74.7K",
+                    "vol": "75.8K",
                     "oi": "27.5K",
-                    "net_gex": 149.4,
-                    "cp_ratio": 2.41
+                    "net_gex": 151.62,
+                    "cp_ratio": 2.37
                 },
                 {
                     "date": "2026-10-07",
-                    "vol": "16.1K",
+                    "vol": "16.3K",
                     "oi": "2.2K",
-                    "net_gex": 32.28,
+                    "net_gex": 32.6,
                     "cp_ratio": 2.34
                 },
                 {
                     "date": "2026-10-09",
-                    "vol": "116.5K",
+                    "vol": "119.5K",
                     "oi": "216.9K",
-                    "net_gex": 232.98,
-                    "cp_ratio": 1.1
+                    "net_gex": 239.0,
+                    "cp_ratio": 1.09
                 },
                 {
                     "date": "2026-10-16",
-                    "vol": "180.7K",
+                    "vol": "187.2K",
                     "oi": "1507.0K",
-                    "net_gex": 361.34,
-                    "cp_ratio": 2.07
+                    "net_gex": 374.41,
+                    "cp_ratio": 2.1
                 },
                 {
                     "date": "2026-10-23",
-                    "vol": "39.8K",
+                    "vol": "41.4K",
                     "oi": "98.8K",
-                    "net_gex": 79.51,
-                    "cp_ratio": 1.54
+                    "net_gex": 82.76,
+                    "cp_ratio": 1.53
                 }
             ]
         },
@@ -956,59 +956,59 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "1386.7K",
+                    "vol": "1391.5K",
                     "oi": "135.5K",
-                    "net_gex": 2773.34,
-                    "cp_ratio": 1.53
+                    "net_gex": 2783.03,
+                    "cp_ratio": 1.52
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "348.9K",
+                    "vol": "361.7K",
                     "oi": "66.2K",
-                    "net_gex": 697.77,
-                    "cp_ratio": 1.82
+                    "net_gex": 723.36,
+                    "cp_ratio": 1.87
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "274.7K",
+                    "vol": "282.2K",
                     "oi": "387.3K",
-                    "net_gex": 549.46,
-                    "cp_ratio": 1.47
+                    "net_gex": 564.49,
+                    "cp_ratio": 1.52
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "50.1K",
+                    "vol": "51.0K",
                     "oi": "19.1K",
-                    "net_gex": 100.1,
-                    "cp_ratio": 2.29
+                    "net_gex": 102.06,
+                    "cp_ratio": 2.33
                 },
                 {
                     "date": "2026-10-07",
-                    "vol": "10.7K",
+                    "vol": "10.9K",
                     "oi": "2.5K",
-                    "net_gex": 21.49,
-                    "cp_ratio": 3.14
+                    "net_gex": 21.74,
+                    "cp_ratio": 3.13
                 },
                 {
                     "date": "2026-10-09",
-                    "vol": "55.9K",
+                    "vol": "58.1K",
                     "oi": "80.3K",
-                    "net_gex": 111.77,
-                    "cp_ratio": 2.17
+                    "net_gex": 116.28,
+                    "cp_ratio": 2.25
                 },
                 {
                     "date": "2026-10-16",
-                    "vol": "94.5K",
+                    "vol": "98.2K",
                     "oi": "490.8K",
-                    "net_gex": 189.01,
-                    "cp_ratio": 2.75
+                    "net_gex": 196.34,
+                    "cp_ratio": 2.68
                 },
                 {
                     "date": "2026-10-23",
-                    "vol": "17.9K",
+                    "vol": "18.3K",
                     "oi": "45.5K",
-                    "net_gex": 35.72,
-                    "cp_ratio": 2.38
+                    "net_gex": 36.59,
+                    "cp_ratio": 2.37
                 }
             ]
         },
@@ -1473,77 +1473,76 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "6460.9K",
+                    "vol": "6545.2K",
                     "oi": "431.9K",
-                    "net_gex": 12921.85,
+                    "net_gex": 13090.48,
                     "cp_ratio": 1.11
                 },
                 {
                     "date": "2026-09-29",
-                    "vol": "1107.4K",
+                    "vol": "1217.8K",
                     "oi": "213.3K",
-                    "net_gex": 2214.85,
-                    "cp_ratio": 0.77
+                    "net_gex": 2435.53,
+                    "cp_ratio": 0.75
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "415.7K",
+                    "vol": "428.5K",
                     "oi": "858.4K",
-                    "net_gex": 831.38,
+                    "net_gex": 857.05,
                     "cp_ratio": 0.76
                 },
                 {
                     "date": "2026-10-01",
-                    "vol": "114.3K",
+                    "vol": "115.0K",
                     "oi": "90.3K",
-                    "net_gex": 228.65,
-                    "cp_ratio": 1.32
+                    "net_gex": 229.9,
+                    "cp_ratio": 1.33
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "482.5K",
+                    "vol": "494.0K",
                     "oi": "581.2K",
-                    "net_gex": 964.94,
-                    "cp_ratio": 0.79
+                    "net_gex": 987.98,
+                    "cp_ratio": 0.78
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "127.1K",
+                    "vol": "128.3K",
                     "oi": "42.4K",
-                    "net_gex": 254.15,
+                    "net_gex": 256.65,
                     "cp_ratio": 0.39
                 },
                 {
                     "date": "2026-10-06",
-                    "vol": "22.3K",
+                    "vol": "22.7K",
                     "oi": "22.9K",
-                    "net_gex": 44.68,
-                    "cp_ratio": 0.77
+                    "net_gex": 45.37,
+                    "cp_ratio": 0.76
                 },
                 {
                     "date": "2026-10-07",
-                    "vol": "23.3K",
+                    "vol": "23.6K",
                     "oi": "21.4K",
-                    "net_gex": 46.54,
-                    "cp_ratio": 1.77
+                    "net_gex": 47.12,
+                    "cp_ratio": 1.75
                 }
             ]
         },
         "USO": {
-            "price": 149.99,
-            "change_percent": 1.12,
+            "price": 150.01,
+            "change_percent": 1.13,
             "sparkline": [
                 144.08,
                 148.83,
                 153.09,
                 148.33,
-                149.99
+                150.01
             ],
-            "gamma_flip": 148.79,
-            "call_wall": 152.69,
-            "put_wall": 147.29,
+            "gamma_flip": 148.81,
+            "call_wall": 152.71,
+            "put_wall": 147.31,
             "strikes": [
-                135.0,
                 136.0,
                 137.0,
                 138.0,
@@ -1572,10 +1571,10 @@
                 161.0,
                 162.0,
                 163.0,
-                164.0
+                164.0,
+                165.0
             ],
             "call_gex": [
-                0.01,
                 0.0,
                 0.0,
                 0.0,
@@ -1604,10 +1603,10 @@
                 0.02,
                 0.03,
                 0.03,
-                0.03
+                0.03,
+                0.14
             ],
             "put_gex": [
-                -1.2,
                 -0.04,
                 -0.03,
                 -0.08,
@@ -1636,10 +1635,10 @@
                 -0.0,
                 -0.02,
                 -0.0,
+                -0.0,
                 -0.0
             ],
             "dex": [
-                -15.79,
                 -0.47,
                 -0.33,
                 -1.03,
@@ -1668,10 +1667,10 @@
                 0.23,
                 0.13,
                 0.39,
-                0.34
+                0.34,
+                1.89
             ],
             "vanna": [
-                -0.24,
                 -0.01,
                 -0.01,
                 -0.02,
@@ -1700,80 +1699,81 @@
                 0.0,
                 0.0,
                 0.01,
-                0.01
+                0.01,
+                0.03
             ],
             "expirations_table": [
                 {
                     "date": "2026-09-30",
-                    "vol": "40.3K",
+                    "vol": "41.3K",
                     "oi": "97.3K",
-                    "net_gex": 80.57,
-                    "cp_ratio": 0.96
+                    "net_gex": 82.54,
+                    "cp_ratio": 1.0
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "43.7K",
+                    "vol": "44.5K",
                     "oi": "113.4K",
-                    "net_gex": 87.44,
+                    "net_gex": 89.09,
                     "cp_ratio": 0.46
                 },
                 {
                     "date": "2026-10-07",
                     "vol": "10.0K",
                     "oi": "3.5K",
-                    "net_gex": 20.05,
+                    "net_gex": 20.1,
                     "cp_ratio": 0.61
                 },
                 {
                     "date": "2026-10-09",
-                    "vol": "16.0K",
+                    "vol": "16.1K",
                     "oi": "33.7K",
-                    "net_gex": 31.98,
-                    "cp_ratio": 2.1
+                    "net_gex": 32.2,
+                    "cp_ratio": 2.07
                 },
                 {
                     "date": "2026-10-16",
-                    "vol": "22.2K",
+                    "vol": "22.4K",
                     "oi": "421.6K",
-                    "net_gex": 44.33,
-                    "cp_ratio": 0.78
+                    "net_gex": 44.88,
+                    "cp_ratio": 0.77
                 },
                 {
                     "date": "2026-10-23",
                     "vol": "6.1K",
                     "oi": "27.0K",
-                    "net_gex": 12.19,
+                    "net_gex": 12.23,
                     "cp_ratio": 0.71
                 },
                 {
                     "date": "2026-10-30",
                     "vol": "7.2K",
                     "oi": "25.4K",
-                    "net_gex": 14.36,
-                    "cp_ratio": 1.12
+                    "net_gex": 14.43,
+                    "cp_ratio": 1.11
                 },
                 {
                     "date": "2026-11-06",
                     "vol": "1.8K",
                     "oi": "373",
-                    "net_gex": 3.62,
-                    "cp_ratio": 0.49
+                    "net_gex": 3.64,
+                    "cp_ratio": 0.48
                 }
             ]
         },
         "GLD": {
-            "price": 377.92,
+            "price": 377.91,
             "change_percent": -3.94,
             "sparkline": [
                 400.07,
                 392.88,
                 391.69,
                 393.41,
-                377.92
+                377.91
             ],
-            "gamma_flip": 374.9,
-            "call_wall": 384.72,
-            "put_wall": 371.12,
+            "gamma_flip": 374.89,
+            "call_wall": 384.71,
+            "put_wall": 371.11,
             "strikes": [
                 350.0,
                 355.0,
@@ -2007,59 +2007,59 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "88.0K",
+                    "vol": "88.8K",
                     "oi": "26.9K",
-                    "net_gex": 175.9,
-                    "cp_ratio": 1.8
+                    "net_gex": 177.57,
+                    "cp_ratio": 1.78
                 },
                 {
                     "date": "2026-09-29",
-                    "vol": "17.1K",
+                    "vol": "19.2K",
                     "oi": "13.8K",
-                    "net_gex": 34.19,
-                    "cp_ratio": 1.15
+                    "net_gex": 38.36,
+                    "cp_ratio": 1.1
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "24.6K",
+                    "vol": "26.1K",
                     "oi": "208.0K",
-                    "net_gex": 49.28,
-                    "cp_ratio": 1.07
+                    "net_gex": 52.21,
+                    "cp_ratio": 1.08
                 },
                 {
                     "date": "2026-10-01",
-                    "vol": "7.8K",
+                    "vol": "7.9K",
                     "oi": "6.2K",
-                    "net_gex": 15.51,
+                    "net_gex": 15.88,
                     "cp_ratio": 1.99
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "55.1K",
+                    "vol": "61.2K",
                     "oi": "104.3K",
-                    "net_gex": 110.11,
-                    "cp_ratio": 1.32
+                    "net_gex": 122.32,
+                    "cp_ratio": 1.4
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "6.7K",
+                    "vol": "6.8K",
                     "oi": "4.9K",
-                    "net_gex": 13.48,
+                    "net_gex": 13.56,
                     "cp_ratio": 1.43
                 },
                 {
                     "date": "2026-10-06",
-                    "vol": "1.4K",
+                    "vol": "1.5K",
                     "oi": "2.9K",
-                    "net_gex": 2.89,
-                    "cp_ratio": 2.15
+                    "net_gex": 2.93,
+                    "cp_ratio": 2.37
                 },
                 {
                     "date": "2026-10-07",
                     "vol": "1.1K",
                     "oi": "1.5K",
-                    "net_gex": 2.13,
-                    "cp_ratio": 1.2
+                    "net_gex": 2.16,
+                    "cp_ratio": 1.18
                 }
             ]
         },
@@ -2184,59 +2184,59 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "69.4K",
+                    "vol": "69.9K",
                     "oi": "36.3K",
-                    "net_gex": 138.89,
-                    "cp_ratio": 1.91
+                    "net_gex": 139.72,
+                    "cp_ratio": 1.9
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "68.3K",
+                    "vol": "70.0K",
                     "oi": "422.6K",
-                    "net_gex": 136.65,
+                    "net_gex": 140.07,
                     "cp_ratio": 1.19
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "44.9K",
+                    "vol": "50.4K",
                     "oi": "119.5K",
-                    "net_gex": 89.76,
-                    "cp_ratio": 1.78
+                    "net_gex": 100.8,
+                    "cp_ratio": 1.68
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "7.1K",
+                    "vol": "7.3K",
                     "oi": "5.1K",
-                    "net_gex": 14.26,
-                    "cp_ratio": 0.75
+                    "net_gex": 14.54,
+                    "cp_ratio": 0.76
                 },
                 {
                     "date": "2026-10-07",
-                    "vol": "7.6K",
+                    "vol": "7.9K",
                     "oi": "7.8K",
-                    "net_gex": 15.12,
-                    "cp_ratio": 0.56
+                    "net_gex": 15.73,
+                    "cp_ratio": 0.54
                 },
                 {
                     "date": "2026-10-09",
-                    "vol": "13.4K",
+                    "vol": "13.8K",
                     "oi": "70.0K",
-                    "net_gex": 26.74,
-                    "cp_ratio": 1.5
+                    "net_gex": 27.7,
+                    "cp_ratio": 1.42
                 },
                 {
                     "date": "2026-10-16",
-                    "vol": "48.6K",
+                    "vol": "49.4K",
                     "oi": "666.7K",
-                    "net_gex": 97.26,
-                    "cp_ratio": 2.08
+                    "net_gex": 98.85,
+                    "cp_ratio": 2.05
                 },
                 {
                     "date": "2026-10-23",
-                    "vol": "11.0K",
+                    "vol": "11.2K",
                     "oi": "46.6K",
-                    "net_gex": 21.95,
-                    "cp_ratio": 1.79
+                    "net_gex": 22.35,
+                    "cp_ratio": 1.73
                 }
             ]
         },
@@ -2391,59 +2391,59 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "760.5K",
+                    "vol": "761.2K",
                     "oi": "71.1K",
-                    "net_gex": 1521.07,
+                    "net_gex": 1522.37,
                     "cp_ratio": 1.96
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "156.6K",
+                    "vol": "161.7K",
                     "oi": "37.1K",
-                    "net_gex": 313.11,
-                    "cp_ratio": 1.65
+                    "net_gex": 323.4,
+                    "cp_ratio": 1.66
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "123.1K",
+                    "vol": "124.8K",
                     "oi": "191.5K",
-                    "net_gex": 246.2,
-                    "cp_ratio": 1.43
+                    "net_gex": 249.63,
+                    "cp_ratio": 1.42
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "7.8K",
+                    "vol": "7.9K",
                     "oi": "5.0K",
-                    "net_gex": 15.59,
+                    "net_gex": 15.76,
                     "cp_ratio": 1.6
                 },
                 {
                     "date": "2026-10-07",
-                    "vol": "3.5K",
+                    "vol": "3.6K",
                     "oi": "2.0K",
-                    "net_gex": 7.02,
-                    "cp_ratio": 1.8
+                    "net_gex": 7.24,
+                    "cp_ratio": 1.7
                 },
                 {
                     "date": "2026-10-09",
-                    "vol": "21.7K",
+                    "vol": "22.6K",
                     "oi": "67.3K",
-                    "net_gex": 43.37,
-                    "cp_ratio": 0.97
+                    "net_gex": 45.26,
+                    "cp_ratio": 0.98
                 },
                 {
                     "date": "2026-10-16",
-                    "vol": "54.5K",
+                    "vol": "55.7K",
                     "oi": "667.0K",
-                    "net_gex": 108.97,
-                    "cp_ratio": 1.17
+                    "net_gex": 111.47,
+                    "cp_ratio": 1.15
                 },
                 {
                     "date": "2026-10-23",
-                    "vol": "18.1K",
+                    "vol": "18.3K",
                     "oi": "55.4K",
-                    "net_gex": 36.14,
-                    "cp_ratio": 0.61
+                    "net_gex": 36.59,
+                    "cp_ratio": 0.62
                 }
             ]
         },
@@ -2558,30 +2558,30 @@
             "expirations_table": [
                 {
                     "date": "2026-09-28",
-                    "vol": "86.6K",
+                    "vol": "88.5K",
                     "oi": "70.3K",
-                    "net_gex": 173.24,
-                    "cp_ratio": 0.58
+                    "net_gex": 176.91,
+                    "cp_ratio": 0.59
                 },
                 {
                     "date": "2026-09-30",
-                    "vol": "51.9K",
+                    "vol": "54.9K",
                     "oi": "68.7K",
-                    "net_gex": 103.75,
-                    "cp_ratio": 0.7
+                    "net_gex": 109.79,
+                    "cp_ratio": 0.72
                 },
                 {
                     "date": "2026-10-02",
-                    "vol": "57.9K",
+                    "vol": "59.0K",
                     "oi": "313.9K",
-                    "net_gex": 115.74,
-                    "cp_ratio": 2.13
+                    "net_gex": 118.08,
+                    "cp_ratio": 2.15
                 },
                 {
                     "date": "2026-10-05",
-                    "vol": "11.4K",
+                    "vol": "11.5K",
                     "oi": "23.3K",
-                    "net_gex": 22.88,
+                    "net_gex": 22.98,
                     "cp_ratio": 1.45
                 },
                 {
@@ -2589,28 +2589,28 @@
                     "vol": "3.1K",
                     "oi": "7.7K",
                     "net_gex": 6.11,
-                    "cp_ratio": 1.67
+                    "cp_ratio": 1.68
                 },
                 {
                     "date": "2026-10-09",
-                    "vol": "22.5K",
+                    "vol": "23.1K",
                     "oi": "107.0K",
-                    "net_gex": 44.98,
-                    "cp_ratio": 1.94
+                    "net_gex": 46.15,
+                    "cp_ratio": 2.02
                 },
                 {
                     "date": "2026-10-16",
-                    "vol": "83.8K",
+                    "vol": "84.3K",
                     "oi": "897.0K",
-                    "net_gex": 167.6,
-                    "cp_ratio": 1.1
+                    "net_gex": 168.57,
+                    "cp_ratio": 1.11
                 },
                 {
                     "date": "2026-10-23",
                     "vol": "10.7K",
                     "oi": "90.3K",
-                    "net_gex": 21.37,
-                    "cp_ratio": 2.11
+                    "net_gex": 21.44,
+                    "cp_ratio": 2.1
                 }
             ]
         },
@@ -2680,24 +2680,24 @@
             "expirations_table": [
                 {
                     "date": "2026-10-02",
-                    "vol": "38.2K",
+                    "vol": "38.4K",
                     "oi": "147.3K",
-                    "net_gex": 76.31,
-                    "cp_ratio": 0.91
+                    "net_gex": 76.81,
+                    "cp_ratio": 0.9
                 },
                 {
                     "date": "2026-10-09",
                     "vol": "14.9K",
                     "oi": "35.8K",
-                    "net_gex": 29.79,
+                    "net_gex": 29.88,
                     "cp_ratio": 2.14
                 },
                 {
                     "date": "2026-10-16",
                     "vol": "23.0K",
                     "oi": "417.3K",
-                    "net_gex": 45.96,
-                    "cp_ratio": 1.76
+                    "net_gex": 45.99,
+                    "cp_ratio": 1.75
                 },
                 {
                     "date": "2026-10-23",
@@ -2708,31 +2708,31 @@
                 },
                 {
                     "date": "2026-10-30",
-                    "vol": "4.7K",
+                    "vol": "4.8K",
                     "oi": "24.7K",
-                    "net_gex": 9.48,
-                    "cp_ratio": 1.73
+                    "net_gex": 9.52,
+                    "cp_ratio": 1.71
                 },
                 {
                     "date": "2026-11-06",
                     "vol": "1.8K",
                     "oi": "1.7K",
                     "net_gex": 3.59,
-                    "cp_ratio": 0.71
+                    "cp_ratio": 0.72
                 },
                 {
                     "date": "2026-11-20",
-                    "vol": "4.4K",
+                    "vol": "4.5K",
                     "oi": "77.8K",
-                    "net_gex": 8.82,
-                    "cp_ratio": 1.58
+                    "net_gex": 8.99,
+                    "cp_ratio": 1.63
                 },
                 {
                     "date": "2026-12-18",
                     "vol": "11.8K",
                     "oi": "387.4K",
-                    "net_gex": 23.55,
-                    "cp_ratio": 7.29
+                    "net_gex": 23.6,
+                    "cp_ratio": 7.31
                 }
             ]
         }
